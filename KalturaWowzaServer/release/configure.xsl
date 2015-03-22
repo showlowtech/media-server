@@ -5,6 +5,7 @@
 <xsl:output omit-xml-declaration="no" method="xml" encoding="UTF-8" indent="no" />
 <xsl:param name="BASE_DIR" />
 <xsl:param name="APP_URL" />
+<xsl:param name="ADMIN_SECRET" />
 <xsl:template name="apply-copy">
 	<xsl:param name="copy-element" select="." />
 	<xsl:param name="indent"><xsl:text>
@@ -53,7 +54,7 @@
 	<xsl:param name="indent-plus"><xsl:value-of select="$indent" /><xsl:text>	</xsl:text></xsl:param>
 	
 	<xsl:for-each select="*">
-		<xsl:param name="existing-property-name" select="string(Name)" />
+		<xsl:variable name="existing-property-name" select="string(Name)" />
 		<xsl:choose>
 			<xsl:when test="count(ext:node-set($set-properties)/Property[Name = $existing-property-name]) > 0">
 				<xsl:call-template name="apply-property">
@@ -70,7 +71,7 @@
 	</xsl:for-each>
 	
 	<xsl:for-each select="ext:node-set($set-properties)/*">
-		<xsl:param name="set-property-name" select="string(Name)" />
+		<xsl:variable name="set-property-name" select="string(Name)" />
 		<xsl:if test="count($existing-properties/Property[Name = $set-property-name]) = 0">
 			<xsl:call-template name="apply-property">
 				<xsl:with-param name="indent" select="$indent-plus" />
@@ -454,22 +455,24 @@
 			</xsl:choose>
 		</xsl:element>
 	</xsl:for-each>
-	<xsl:param name="live-stream-entry-module">
+	<xsl:variable name="live-stream-entry-module">
 		<Module>
 			<Name>LiveStreamEntry</Name>
 			<Description>LiveStreamEntry</Description>
 			<Class>com.kaltura.media.server.wowza.listeners.LiveStreamEntry</Class>
 		</Module>
-	</xsl:param>
+	</xsl:variable>
 	<xsl:call-template name="apply-copy">
 		<xsl:with-param name="copy-element" select="ext:node-set($live-stream-entry-module)" />
 	</xsl:call-template>
 </xsl:template>
 <xsl:template name="application">
-	<xsl:text>	</xsl:text>
+	<xsl:text>
+	</xsl:text>
 	<xsl:element name="Application">
 		<xsl:for-each select="*|comment()">
-		<xsl:text>		</xsl:text>
+		<xsl:text>
+		</xsl:text>
 			<xsl:choose>
 				<xsl:when test="self::comment()">
 					<xsl:copy-of select="."/>
@@ -490,7 +493,8 @@
 							<xsl:when test="local-name(.) = 'Modules'"><xsl:call-template name="application-modules"/></xsl:when>
 							<xsl:when test="local-name(.) = 'Properties'">
 								<xsl:call-template name="apply-properties">
-									<xsl:with-param name="indent"><xsl:text>		</xsl:text></xsl:with-param>
+									<xsl:with-param name="indent"><xsl:text>
+		</xsl:text></xsl:with-param>
 									<xsl:with-param name="set-properties">
 										<Property>
 											<Name>securityPublishRequirePassword</Name>
@@ -553,11 +557,11 @@
 			</xsl:choose>
 		</xsl:element>
 	</xsl:for-each>
-	<xsl:param name="kaltura-server-listener">
+	<xsl:variable name="kaltura-server-listener">
 		<ServerListener>
 			<BaseClass>com.kaltura.media.server.wowza.listeners.ServerListener</BaseClass>
 		</ServerListener>
-	</xsl:param>
+	</xsl:variable>
 	<xsl:call-template name="apply-copy">
 		<xsl:with-param name="copy-element" select="ext:node-set($kaltura-server-listener)" />
 	</xsl:call-template>
@@ -585,11 +589,11 @@
 									<xsl:with-param name="set-properties">
 										<Property>
 											<Name>KalturaServerURL</Name>
-											<Value>http://ny-www.kaltura.com</Value>
+											<Value><xsl:value-of select="$APP_URL" /></Value>
 										</Property>
 										<Property>
 											<Name>KalturaServerAdminSecret</Name>
-											<Value>a9685a1598fab3f348f95ba23a36096c</Value>
+											<Value><xsl:value-of select="$ADMIN_SECRET" /></Value>
 										</Property>
 										<Property>
 											<Name>KalturaServerTimeout</Name>
@@ -640,15 +644,11 @@
 										</Property>
 										<Property>
 											<Name>KalturaRecordedFileGroup</Name>
-											<Value>apache</Value>
+											<Value>kaltura</Value>
 										</Property>
 										<Property>
 											<Name>KalturaIsLiveRegistrationMinBufferTime</Name>
-											<Value>60</Value>
-										</Property>
-										<Property>
-											<Name>KalturaSyncEntryids</Name>
-											<Value>1_oorxcge2, 1_q9xfqyof</Value>
+											<Value>30</Value>
 										</Property>
 									</xsl:with-param>
 								</xsl:call-template>

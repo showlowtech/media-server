@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<project name="Kaltura Media-Server-AsyncMediaServerProcessClientApp Install" default="install">
+
+    <target name="set-properties">
+
+    <property environment="env" />
+    
+    <condition property="wowza.install.dir" value="${env.WMSINSTALL_HOME}" else="/usr/local/WowzaStreamingEngine-4.0.1/">
+    	<isset property="env.WMSINSTALL_HOME"/>
+    </condition>
+
+         <loadproperties srcfile="/opt/kaltura/app/configurations/ecdn.ini" />
+
+      <property name="async_process_location" value="${BASE_DIR}/media-server/AsyncMediaServerProcessClientApp" />
+    </target>
+
+  <target name="configure">
+
+	 <mkdir dir="${async_process_location}/XmlTasks"/>
+ 	
+    <copy file="config.template.ini"  tofile="config.ini"
+        overwrite="true"  filtering="true" >
+         <filterset>
+               <filter token="@PARTNER_ID@" value="${PARTNER_ID}"/>
+              <filter token="@PARTNER_ADMIN_SECRET@" value="${ADMIN_SECRET}"/>
+             <filter token="@WAIT_TIME@" value="60"/>
+               <filter token="@XML_TASK_PATH@" value="${async_process_location}/XmlTasks"/>
+             <filter token="@SERVICE_URL@" value="${apphome_url}"/>
+          </filterset>
+     </copy>
+
+  
+    
+    <copy file="${wowza.install.dir}/conf/Server.xml" tofile="${wowza.install.dir}/conf/Server.xml.backup" overwrite="true"/>
+
+
+     <xslt style="${async_process_location}/configure-server.xsl" in="${wowza.install.dir}/conf/Server.xml" out="${wowza.install.dir}/conf/Server.xml.tmp">
+    	  <param name="ADMIN_SECRET" expression="${ADMIN_SECRET}"/>
+    	  <param name="async_process_location" expression="${async_process_location}"/>
+           <param name="PARTNER_ID" expression="${PARTNER_ID}"/>  
+     </xslt>
+
+
+    <copy file="${wowza.install.dir}/conf/kLive/Application.xml" tofile="${wowza.install.dir}/conf/kLive/Application.xml.backup" overwrite="true"/>
+   
+ <xslt style="${async_process_location}/configure-application.xsl" in="${wowza.install.dir}/conf/kLive/Application.xml" out="${wowza.install.dir}/conf/kLive/Application.xml.tmp">
+	<param name="PARTNER_ID" expression="${PARTNER_ID}"/>
+     </xslt>
+
+
+	<copy file="${wowza.install.dir}/conf/VHost.xml" tofile="${wowza.install.dir}/conf/VHost.xml.backup" overwrite="true"/>
+   
+  <xslt style="${async_process_location}/configure-vhost.xsl" in="${wowza.install.dir}/conf/VHost.xml" out="${wowza.install.dir}/conf/VHost.xml.tmp">
+         <param name="PARTNER_ID" expression="${PARTNER_ID}"/>          
+     </xslt>                        
+
+ <copy file="${wowza.install.dir}/conf/VHost.xml.tmp" tofile="${wowza.install.dir}/conf/VHost.xml" overwrite="true"/>
+ <copy file="${wowza.install.dir}/conf/Server.xml.tmp" tofile="${wowza.install.dir}/conf/Server.xml" overwrite="true"/>
+ <copy file="${wowza.install.dir}/conf/kLive/Application.xml.tmp" tofile="${wowza.install.dir}/conf/kLive/Application.xml" overwrite="true"/>
+
+    <condition	property="isCentOs">
+       <os name="centos"/>
+    </condition>
+
+ </target>
+
+   <target name="install-cronjob" if="isCentos">
+       <exec executable="bash">
+           <arg value="/opt/kaltura/bin/install-cronjob.sh"/>
+     </exec>
+   </target>
+
+   <target name="install" depends="set-properties,  configure, install-cronjob">
+   </target>
+
+</project>
+
