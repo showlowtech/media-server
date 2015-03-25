@@ -2,7 +2,7 @@
 <project name="Kaltura Media-Server Install" default="install">
 
        <available file="/etc/kaltura.d/system.ini" property="system-ini-present" />	
-        <available file="/opt/kaltura/app/configurations/ecdn.ini" property="ecdn-ini-present" /> 
+        <available file="/opt/kaltura/app/configurations/eCDN_configuration.ini" property="ecdn-ini-present" /> 
 	<target name="set-properties">
 		<property environment="env" />
 		<condition property="wowza.install.dir" value="${env.WMSINSTALL_HOME}" else="/usr/local/WowzaStreamingEngine-4.0.1">
@@ -17,7 +17,7 @@
 	</target>
 
       <target  name="extract-properties-from-ecdn-ini" if="ecdn-ini-present">
-             <loadproperties srcfile="/opt/kaltura/app/configurations/ecdn.ini" prefix="kaltura" />
+             <loadproperties srcfile="/opt/kaltura/app/configurations/eCDN_configuration.ini" prefix="kaltura" />
       </target>
 
 	<target name="retrieve-admin-secret-from-db" unless="kaltura.ADMIN_SECRET" depends="extract-properties-from-ecdn-ini, set-properties-from-system-ini">
