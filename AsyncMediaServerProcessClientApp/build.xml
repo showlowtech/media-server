@@ -58,14 +58,17 @@
  <copy file="${wowza.install.dir}/conf/Server.xml.tmp" tofile="${wowza.install.dir}/conf/Server.xml" overwrite="true"/>
  <copy file="${wowza.install.dir}/conf/kLive/Application.xml.tmp" tofile="${wowza.install.dir}/conf/kLive/Application.xml" overwrite="true"/>
 
+    </target>	
+
     <condition	property="isCentOs">
-       <os name="centos"/>
+       <and>
+       <os name="Linux"/>
+       <available file="/etc/centos-release" />
+       </and>
     </condition>
 
- </target>
-
    <target name="install-cronjob" if="isCentos">
-       <exec executable="bash">
+       <exec executable="/bin/bash">
            <arg value="/opt/kaltura/bin/install-cronjob.sh"/>
      </exec>
    </target>

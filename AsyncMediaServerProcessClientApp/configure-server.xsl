@@ -5,8 +5,6 @@
 	<xsl:param name="ADMIN_SECRET" />
 	<xsl:param name="async_process_location" />
 	<xsl:param name="PARTNER_ID" />
-	<xsl:param mame="MIN_BUFFER_TIME" select="60"/>
-	<xsl:param name="LIVE_STREAM_MAX_DVR_WINDOW" select="86400"/>
 
 	<xsl:template match="node()|@*">
 		<xsl:copy>
@@ -65,10 +63,10 @@
 				                 </Value>
 					</xsl:when>
 					<xsl:when test="Name = 'KalturaIsLiveRegistrationMinBufferTime' ">
-						 <Value>"$MIN_BUFFER_TIME"</Value>
+						 <Value>60</Value>
 					</xsl:when>
 					<xsl:when test="Name = 'KalturaLiveStreamMaxDvrWindow' ">
-						<Value>"$LIVE_STREAM_MAX_DVR_WINDOW"</Value>
+						<Value>86400</Value>
 					</xsl:when>
 					<xsl:when test="Name = 'KalturaPartnerId' ">
 						 <Value>   
