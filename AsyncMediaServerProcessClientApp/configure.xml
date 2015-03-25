@@ -46,8 +46,8 @@
         </copy>
     </target>
 
-	<target name="configure" depends="copy-and-set-template-file, install-cronJob">
+    <target name="configure" depends="copy-and-set-template-file, install-cronJob">
         <echo message="Finished configuring Kaltura recorded file uploader"/>
-	</target>
+    </target>
 
 </project>
