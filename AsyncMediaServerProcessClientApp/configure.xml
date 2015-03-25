@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project name="Kaltura Media-Server Uploader Configuration" default="configure">
+
+    <condition property="isCentOs">
+        <and>
+            <os name="Linux"/>
+            <available file="/etc/centos-release" />
+        </and>
+    </condition>
+
+    <target name="check-partner-id-set" unless="PARTNER_ID">
+        <input message="Please enter your Kaltura partner id:" addproperty="PARTNER_ID"/>
+    </target>
+
+    <target name="check-admin-secret-set" unless="ADMIN_SECRET">
+        <input message="Please enter your partner admin secret:" addproperty="ADMIN_SECRET"/>
+    </target>
+
+    <target name="check-upload_xml_path-set" unless="UPLOAD_XML_DIR">
+        <input message="Please enter your XML upload dir:" addproperty="UPLOAD_XML_DIR"/>
+    </target>
+
+    <target name="check-kaltura_app_url-set" unless="apphome_url">
+        <input message="Please enter your service URL:" addproperty="apphome_url"/>
+    </target>
+
+    <target name="load_properties">
+        <loadproperties srcfile="/opt/kaltura/app/configurations/eCDN_configuration.ini" />
+    </target>
+
+    <target name="install-cronJob" if="isCentos">
+        <exec executable="/bin/bash">
+            <arg value="/opt/kaltura/bin/install_kaltura_uploader_cronjob.sh"/>
+        </exec>
+    </target>
+
+    <target name="copy-and-set-template-file" depends="load_properties, check-partner-id-set, check-admin-secret-set, check-upload_xml_path-set, check-kaltura_app_url-set">
+        <echo message="copying file from ${basedir}/config.template.ini to ${basedir}/config.ini"/>
+        <copy file="${basedir}/config.template.ini" tofile="${basedir}/config.ini" overwrite="true" filtering="true">
+            <filterset>
+                <filter token="PARTNER_ID" value="${PARTNER_ID}"/>
+                <filter token="PARTNER_ADMIN_SECRET" value="${ADMIN_SECRET}"/>
+                <filter token="XML_TASK_PATH" value="${UPLOAD_XML_DIR}"/>
+                <filter token="SERVICE_URL" value="http://${apphome_url}"/>
+            </filterset>
+        </copy>
+    </target>
+
+	<target name="configure" depends="copy-and-set-template-file, install-cronJob">
+        <echo message="Finished configuring Kaltura recorded file uploader"/>
+	</target>
+
+</project>
