@@ -13,8 +13,8 @@ $tag_name = "rel-$version";
 $target_commitish = exec("git rev-parse HEAD 2>&1", $output, $retVal);
 if ( $retVal !== 0 )
 {
-	echo implode("\n", $output);
-	exit( $retVal );
+    echo implode("\n", $output);
+    exit( $retVal );
 }
 
 $name = "v$version";
@@ -41,5 +41,11 @@ $filePath = __DIR__ . "/KalturaWowzaServer/build/distributions/$name";
 $contentType = 'application/zip';
 $client->repos->releases->assets->upload($owner, $repo, $releaseId, $name, $contentType, $filePath);
 echo "Installation zip file uploaded: $filePath\n";
+
+$name = "AsyncMediaServerProcessClientApp-$version.zip";
+$filePath = __DIR__ . "/KalturaWowzaServer/build/distributions/$name";
+$contentType = 'application/zip';
+$client->repos->releases->assets->upload($owner, $repo, $releaseId, $name, $contentType, $filePath);
+echo "AsyncMediaServerProcessClientApp zip file uploaded: $filePath\n";
 
 exit(0);

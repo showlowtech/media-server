@@ -46,6 +46,15 @@ task prepareRelease(type: Zip, dependsOn: build ) {
     }
 }
 
+task prepareAsyncMediaServerProcessClientAppRelease(type: Zip, dependsOn: build ) {
+    archiveName = "AsyncMediaServerProcessClientApp-$project.version" + ".zip"
+    from "$projectDir/../AsyncMediaServerProcessClientApp"
+
+    doLast {
+        println "AsyncMediaServerProcessClientApp ZIP: $prepareAsyncMediaServerProcessClientAppRelease.archivePath"
+    }
+}
+
 task release(type:Exec, dependsOn: prepareRelease) {
 
     //check if client library already exists
