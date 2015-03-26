@@ -41,7 +41,7 @@
                 <filter token="PARTNER_ID" value="${PARTNER_ID}"/>
                 <filter token="PARTNER_ADMIN_SECRET" value="${ADMIN_SECRET}"/>
                 <filter token="XML_TASK_PATH" value="${UPLOAD_XML_DIR}"/>
-                <filter token="SERVICE_URL" value="http://${apphome_url}"/>
+                <filter token="SERVICE_URL" value="${apphome_url}"/>
             </filterset>
         </copy>
     </target>
