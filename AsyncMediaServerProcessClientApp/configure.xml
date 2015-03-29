@@ -34,7 +34,23 @@
         </exec>
     </target>
 
-    <target name="copy-and-set-template-file" depends="load_properties, check_partner_id_set, check_admin-secret_set, check_upload_xml_path_set, check_kaltura_app_url_set">
+    <!-- make sure php.ini timezone is set -->
+    <condition property="php.ini-exists">
+        <available file="/etc/php.ini" />
+    </condition>
+
+    <target name="read-timezone" if="php.ini-exists">
+        <loadproperties srcfile="/etc/php.ini" prefix="php"/>
+    </target>
+
+    <target name="ensure-timezone-set" depends="read-timezone" unless="php.date.timezone">
+        <replace file="/etc/php.ini" token=";date.timezone =" value="date.timezone = 'GMT'"/>
+    </target>
+
+    <target name="copy-and-set-template-file"
+            depends="load_properties, check_partner_id_set,
+                check_admin-secret_set, check_upload_xml_path_set,
+                check_kaltura_app_url_set, ensure-timezone-set">
         <echo message="copying file from ${basedir}/config.template.ini to ${basedir}/config.ini"/>
         <copy file="${basedir}/config.template.ini" tofile="${basedir}/config.ini" overwrite="true" filtering="true">
             <filterset>
