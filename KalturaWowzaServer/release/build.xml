@@ -1,7 +1,7 @@
 <project name="Kaltura Media-Server Install" default="install">
 
     <available file="/etc/kaltura.d/system.ini" property="system-ini-present" />
-    <available file="/opt/kaltura/app/configurations/eCDN_configuration.ini" property="ecdn-ini-present" />
+    <available file="/opt/kaltura/app/configurations/ecdn.ini" property="ecdn-ini-present" />
     <target name="set-properties">
         <property environment="env" />
         <condition property="wowza.install.dir" value="${env.WMSINSTALL_HOME}" else="/usr/local/WowzaStreamingEngine-4.0.1">
